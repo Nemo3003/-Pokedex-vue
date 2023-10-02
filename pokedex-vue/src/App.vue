@@ -1,135 +1,123 @@
 <template>
-  <div>
-    <!-- Check if a Pokemon is selected -->
-    <div v-if="selectedPokemon">
-      <h1>{{ selectedPokemon.name }}</h1>
-      <div class="pokemon-details">
-        <img :src="selectedPokemon.imageUrl" :alt="selectedPokemon.name" />
-        <div class="basic-info">
-          <h2>Basic Information</h2>
-          <p>Type: {{ selectedPokemon.type }}</p>
-          <p>Weight: {{ selectedPokemon.weight }} kg</p>
-        </div>
-        <div class="description">
-          <h2>Description (in Spanish)</h2>
-          <p>{{ selectedPokemon.description }}</p>
-        </div>
-        <div class="moves">
-          <h2>Moves</h2>
-          <ul>
-            <li v-for="move in selectedPokemon.moves" :key="move">{{ move }}</li>
-          </ul>
-        </div>
-      </div>
-      <button @click="goBack">Back to Pokemon List</button>
-    </div>
+  <v-app>
+    <v-container>
 
-    <!-- Display the list of Pokemon when no Pokemon is selected -->
-    <div v-else>
-      <h1>Pokemon List</h1>
-      <ul>
-        <li v-for="pokemon in pokemonList" :key="pokemon.name">
-          <div class="pokemon-card">
-            <img :src="pokemon.imageUrl" :alt="pokemon.name" />
-            <div class="pokemon-info">
-              <h2>{{ pokemon.name }}</h2>
-              <p>Type: {{ pokemon.type }}</p>
-              <p>Weight: {{ pokemon.weight }} kg</p>
-            </div>
-            <button @click="showPokemonDetails(pokemon)">Show Details</button>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
+        <v-container>
+          <v-text-field
+          v-model="search"
+          label="Buscar"
+          placeholder="Charmander"
+          solo
+        ></v-text-field>
+          <v-row>
+            <v-col 
+            cols="2" 
+            v-for="pokemon in filtered_pokemons" 
+            :key="pokemon.name"> 
+            <v-card @click="show_pokemon(get_id(pokemon))">
+              <v-container >
+                  <v-row>
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${get_id(pokemon)}.png`" 
+                    :alt="pokemon.name" width="80%">
+                  </v-row>
+                <h2 class="text-center">{{ get_name(pokemon)}}</h2>
+              </v-container>
+            </v-card>
+          </v-col>
+          </v-row>
+        </v-container>
+        <v-dialog v-model="show_dialog" width="800">
+            <v-card v-if="selected_pokemon">
+              <v-container>
+                <v-row class="d-flex align-center">
+                  <v-col cols="4">
+                    <img :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${selected_pokemon.id}.png`" 
+                    :alt="selected_pokemon.name" width="80%"/>
+                  </v-col>
+                  <v-col cols="8">
+                    <h1>{{ get_name(selected_pokemon) }}</h1>
+                    <v-chip label v-for="type in selected_pokemon.types" :key="type.slot" class="mr-2">{{ type.type.name }}</v-chip>
+                    <v-divider class="my-4"></v-divider>
+                    <v-chip label>
+                      Altura {{ selected_pokemon.height * 2.54 }} cm
+                     
+                    </v-chip>
+                    <v-chip label class="ml-2">
+                      Peso {{ (selected_pokemon.weight * 0.45359237).toFixed(0)}} kg
+                    </v-chip>
+                    
+                  </v-col>
+                </v-row>
+                {{ selected_pokemon }}
+              </v-container>
+            </v-card>
+        </v-dialog>
+
+    </v-container>
+  </v-app>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
+
 
 export default {
-  data() {
-    return {
-      pokemonList: [], // Array to store the fetched Pokemon data
-      selectedPokemon: null, // Currently selected Pokemon
-    };
-  },
-  created() {
-    // Fetch data when the component is created
-    this.fetchPokemonList();
-  },
+  name: 'App',
+
+ mounted(){
+    axios.get("https://pokeapi.co/api/v2/pokemon?limit=152").then((res)=> {
+      this.pokemons = res.data.results
+}) 
+ },
+  data (){
+    return{
+      pokemons: [],
+      search: "",
+      show_dialog: false,
+      selected_pokemon:null,
+  }},
+
   methods: {
-    async fetchPokemonList() {
-      try {
-        const response = await axios.get("https://pokeapi.co/api/v2/pokemon/");
-        const pokemonData = response.data.results;
-        for (const pokemon of pokemonData) {
-          // Fetch additional details for each Pokemon
-          const pokemonDetails = await this.fetchPokemonDetails(pokemon.url);
-          this.pokemonList.push({
-            name: pokemon.name,
-            imageUrl: pokemonDetails.sprites.front_default,
-            type: pokemonDetails.types[0].type.name,
-            weight: pokemonDetails.weight / 10, // Convert to kg
-            description: "Placeholder Description", // You need to fetch the description separately
-            moves: pokemonDetails.moves.map((move) => move.move.name),
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching Pokemon data:", error);
-      }
+    get_id(pokemon){
+      return Number(pokemon.url.split("/")[6])
     },
-    async fetchPokemonDetails(url) {
-      try {
-        const response = await axios.get(url);
-        const pokemonDetails = response.data;
-
-        // Fetch the description from the species URL
-        const speciesResponse = await axios.get(pokemonDetails.species.url);
-        const speciesData = speciesResponse.data;
-
-        // Find the description in the species data
-        const descriptionEntry = speciesData.flavor_text_entries.find(
-          (entry) => entry.language.name === "es" // Language code for Spanish
-        );
-
-        const description = descriptionEntry ? descriptionEntry.flavor_text : "No description available.";
-
-        this.selectedPokemon = {
-          name: pokemonDetails.name,
-          imageUrl: pokemonDetails.sprites.front_default,
-          type: pokemonDetails.types[0].type.name,
-          weight: pokemonDetails.weight / 10, 
-          description: description, 
-          moves: pokemonDetails.moves.map((move) => move.move.name),
-        };
-      } catch (error) {
-        console.error("Error fetching Pokemon details:", error);
-      }
+    get_name(pokemon){
+      return pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)
     },
-    goBack() {
-      // Clear the selected Pokemon and go back to the list
-      this.selectedPokemon = null;
+    get_all_types(pokemon) {
+        return pokemon.types.map(type => type.type.name).join(", ");
+      },
+    show_pokemon(id){
+      axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`).then((res)=> {
+        this.selected_pokemon = res.data;
+        this.show_dialog = ! this.show_dialog;
+      
+      })
+      
+    }
+  },
+  computed: {
+    filtered_pokemons() {
+      return this.pokemons.filter((item) => {
+        return item.name.includes(this.search);
+      });
     },
   },
 };
 </script>
-
-<style scoped>
-/* Add your CSS styles here */
-.pokemon-card {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-img {
-  max-width: 100px;
-  max-height: 100px;
-  margin-right: 20px;
-}
-
-button {
-  margin-left: 20px;
+<style>
+#app {
+  background: linear-gradient(
+      to bottom right,
+      rgba(10, 10, 10, 1),
+      rgba(12, 39, 63, 1)
+    )
+    no-repeat center center fixed !important;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover !important;
+  background-position: center;
+  min-height: 100vh;
 }
 </style>
