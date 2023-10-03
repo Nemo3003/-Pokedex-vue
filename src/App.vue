@@ -86,7 +86,7 @@ export default {
     },
     formatWeight(weight) {
       if (weight !== 'N/A') {
-        return (weight * 0.1).toFixed(1);
+        return (weight);
       }
       return 'N/A';
     },
