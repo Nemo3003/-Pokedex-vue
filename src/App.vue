@@ -1,14 +1,7 @@
 <template>
   <v-app>
     <!-- Banner Section -->
-    <v-row class="banner" justify="center" align="center">
-      <v-col cols="12">
-        <v-container class="text-h2 font-weight-bold white--text text-center">
-          <em>POKEMON</em>
-          <span class="banner-subtitle">by Ulises M. Melgarejo</span>
-        </v-container>
-      </v-col>
-    </v-row>
+    <BannerBar></BannerBar>
 
     <!-- Search Field -->
     <v-container>
@@ -77,10 +70,13 @@
 
 <script>
 import axios from 'axios';
+import BannerBar from './components/BannerBar.vue'
 
 export default {
   name: 'App',
-
+  components: {
+    BannerBar
+  },
   data() {
     return {
       pokemons: [],
