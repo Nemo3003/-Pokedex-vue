@@ -11,7 +11,7 @@
               <v-chip label v-for="type in selectedPokemon.types" :key="type.slot" class="mr-2">{{ type.type.name }}</v-chip>
               <v-divider class="my-4"></v-divider>
               <v-chip label>Altura {{ selectedPokemon.height * 2.54 }} cm</v-chip>
-              <v-chip label class="ml-2">Peso {{ (selectedPokemon.weight * 0.45359237).toFixed(0) }} kg</v-chip>
+              <v-chip label class="ml-2">Peso {{ (selectedPokemon.weight * 0.45359237).toFixed(0) }} grs</v-chip>
               <v-divider class="my-4"></v-divider>
               <h3>Descripcion</h3>
               <p>{{ selectedPokemonDescription }}</p>
