@@ -16,7 +16,7 @@
                 <v-col cols="12">
                   <h2 class="text-h6 text-center">{{ pokemon.name }}</h2>
                   <p class="text-caption text-center">Type: {{ pokemon.types }}</p>
-                  <p class="text-caption text-center">Weight: {{ pokemon.weight }} kg</p>
+                  <p class="text-caption text-center">Weight: {{ (pokemon.weight  * 0.45359237).toFixed(0)}} kg</p>
                 </v-col>
               </v-row>
             </v-container>
