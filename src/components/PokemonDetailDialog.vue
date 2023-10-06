@@ -1,6 +1,9 @@
 <template>
     <v-dialog v-model="dialogVisible" width="800">
       <v-card v-if="selectedPokemon" class="px-4">
+        <v-btn icon @click="closeDialog" class="close-button">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
         <v-container class="px-2 text-center">
           <v-row class="d-flex align-center">
             <v-col cols="4">
@@ -34,29 +37,32 @@
   </template>
   
   <script>
-  export default {
-    props: {
-      showDialog: Boolean,
-      selectedPokemon: Object,
-      selectedPokemonDescription: String,
-    },data() {
+export default {
+  props: {
+    showDialog: Boolean,
+    selectedPokemon: Object,
+    selectedPokemonDescription: String,
+  },
+  data() {
     return {
-      dialogVisible: this.showDialog, 
+      dialogVisible: this.showDialog,
     };
   },
   watch: {
     showDialog(newValue) {
-      this.dialogVisible = newValue; 
+      this.dialogVisible = newValue;
     },
     dialogVisible(newValue) {
-      this.$emit('update:showDialog', newValue); 
+      this.$emit('update:showDialog', newValue);
     },
   },
-    methods: {
-      capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-      },
+  methods: {
+    capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
     },
-  };
-  </script>
-  
+    closeDialog() {
+      this.dialogVisible = false; // Set dialogVisible to false to close the dialog
+    },
+  },
+};
+</script>

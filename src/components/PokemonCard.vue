@@ -1,7 +1,7 @@
 <template>
     <div>
       <!-- Iterate over row groups -->
-      <v-row v-for="(rowGroup, index) in rowGroups" :key="index">
+      <v-row v-for="(rowGroup, index) in rowGroups" :key="index" class="mx-1">
         <!-- Iterate over Pokémon cards in each row -->
         <v-col cols="12" sm="6" md="4" lg="3" v-for="pokemon in rowGroup" :key="pokemon.name">
           <!-- Pokemon Card -->
