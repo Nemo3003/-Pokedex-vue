@@ -1,11 +1,13 @@
 <template>
   <v-app>
+
     <!-- Banner Section -->
     <BannerBar></BannerBar>
 
     <!-- Search Field -->
     <v-container>
       <SearchField :search="search" @update-search="updateSearch"></SearchField> <!-- Pass search prop and listen for update-search event -->
+      
       <v-row justify="center">
          <!-- Pokemon Cards using PokemonCard component -->
          <v-row justify="center">
@@ -21,6 +23,10 @@
     <v-container v-if="error" class="mt-4">
       <v-alert color="error">{{ error }}</v-alert>
     </v-container>
+    <div v-if="loading" class="loading-screen">
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      <p>Loading Pokémon data. Please wait...</p>
+    </div>
   </v-app>
 </template>
 
@@ -28,8 +34,8 @@
 import axios from 'axios';
 import BannerBar from './components/BannerBar.vue'
 import SearchField from './components/SearchField.vue'
-import PokemonCard from './components/PokemonCard.vue'; // Import the PokemonCard component
-import PokemonDetailDialog from './components/PokemonDetailDialog.vue'; // Import the PokemonDetailDialog component
+import PokemonCard from './components/PokemonCard.vue'; 
+import PokemonDetailDialog from './components/PokemonDetailDialog.vue'; 
 
 
 export default {
@@ -48,6 +54,7 @@ export default {
       selectedPokemon: null,
       selectedPokemonDescription: '',
       error: null,
+      loading: true,
     };
   },
 
@@ -68,8 +75,10 @@ export default {
               weight: this.formatWeight(data.weight),
             };
           });
+          this.loading = false;
         })
         .catch((error) => {
+          this.loading = false;
           throw new Error(error)
         });
     });
@@ -101,7 +110,6 @@ export default {
         this.fetchPokemonDescription(id);
         this.showDialog = true; // Show the dialog when a Pokemon is clicked
       }).catch((error) => {
-        // Handle errors
         throw new Error(error);
       });
     },
@@ -111,7 +119,6 @@ export default {
         const descriptionEntry = speciesData.flavor_text_entries.find((entry) => entry.language.name === 'es');
         this.selectedPokemonDescription = descriptionEntry ? descriptionEntry.flavor_text : 'No description available.';
       }).catch((error) => {
-        // Manejo de errores de la solicitud de descripción
         throw new Error(error)
       });
     },
@@ -164,5 +171,23 @@ export default {
 
 .banner-subtitle {
   font-size: 0.3em;
+}
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-screen p {
+  margin-top: 16px;
+  font-size: 18px;
 }
 </style>
