@@ -142,7 +142,7 @@ export default {
   computed: {
     FilteredPokemons() {
   if (this.search === '') {
-    return this.pokemons.slice((this.currentPage - 1) * 20, this.currentPage * 20);
+    return this.pokemons.slice((this.currentPage - 1) * 8, this.currentPage * 8);
   } else {
     return this.pokemons.filter((item) => {
       return item.name.includes(this.search);
