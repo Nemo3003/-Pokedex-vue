@@ -5,7 +5,7 @@
         <!-- Iterate over Pokémon cards in each row -->
         <v-col cols="12" sm="6" md="4" lg="3" v-for="pokemon in rowGroup" :key="pokemon.name">
           <!-- Pokemon Card -->
-          <v-card @click="showPokemon(pokemon.id)" class="mb-4">
+          <v-card @click="ShowPokemon(pokemon.id)" class="mb-4">
             <v-container>
               <v-row>
                 <v-col cols="12">
@@ -50,7 +50,7 @@
       },
     },
     methods: {
-      showPokemon(id) {
+      ShowPokemon(id) {
         this.$emit('show-pokemon', id);
       },
     },
