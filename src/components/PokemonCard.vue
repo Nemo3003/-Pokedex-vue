@@ -35,19 +35,19 @@
       rowGroups() {
         // Create row groups with a maximum of 4 columns per row
         const groups = [];
-        let currentGroup = [];
-        for (const pokemon of this.filteredPokemons) {
-          if (currentGroup.length === 4) {
-            groups.push(currentGroup);
-            currentGroup = [];
-          }
-          currentGroup.push(pokemon);
-        }
-        if (currentGroup.length > 0) {
+      let currentGroup = [];
+      for (const pokemon of this.filteredPokemons) {
+        if (currentGroup.length === 4) {
           groups.push(currentGroup);
+          currentGroup = [];
         }
-        return groups;
-      },
+        currentGroup.push(pokemon);
+      }
+      if (currentGroup.length > 0) {
+        groups.push(currentGroup);
+      }
+      return groups;
+    },
     },
     methods: {
       ShowPokemon(id) {

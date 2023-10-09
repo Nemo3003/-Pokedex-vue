@@ -12,7 +12,15 @@
          <!-- Pokemon Cards using PokemonCard component -->
          <v-row justify="center">
             <v-container >
-              <PokemonCard :filteredPokemons="FilteredPokemons" @show-pokemon="ShowPokemon"></PokemonCard>
+              <v-row justify="center">
+                <v-btn @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="mx-1">Anterior</v-btn>
+                <v-btn @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="mx-1">Siguiente</v-btn>
+              </v-row>
+                <PokemonCard :filteredPokemons="FilteredPokemons" @show-pokemon="ShowPokemon"></PokemonCard>
+              <v-row justify="center mb-5">
+                <v-btn @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="mx-1">Anterior</v-btn>
+                <v-btn @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="mx-1">Siguiente</v-btn>
+              </v-row>
             </v-container>
           </v-row>
       </v-row>
@@ -55,32 +63,34 @@ export default {
       selectedPokemonDescription: '',
       error: null,
       loading: true,
+      currentPage: 1,
+      totalPages: 1,
     };
   },
 
   mounted() {
     axios.get('https://pokeapi.co/api/v2/pokemon?limit=152').then((res) => {
-      const pokemonList = res.data.results;
-      const pokemonPromises = pokemonList.map((pokemon) => axios.get(pokemon.url));
-
-      Promise.all(pokemonPromises)
-        .then((responses) => {
-          this.pokemons = responses.map((response) => {
-            const data = response.data;
-            return {
-              name: this.Capitalize(data.name),
-              id: data.id,
-              imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.id}.png`,
-              types: this.GetTypes(data),
-              weight: this.FormatWeight(data.weight),
-            };
-          });
-          this.loading = false;
-        })
-        .catch((error) => {
-          this.loading = false;
-          throw new Error(error)
+    const pokemonList = res.data.results;
+    const pokemonPromises = pokemonList.map((pokemon) => axios.get(pokemon.url));
+    Promise.all(pokemonPromises)
+      .then((responses) => {
+        this.pokemons = responses.map((response) => {
+          const data = response.data;
+          return {
+            name: this.Capitalize(data.name),
+            id: data.id,
+            imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.id}.png`,
+            types: this.GetTypes(data),
+            weight: this.FormatWeight(data.weight),
+          };
         });
+        this.totalPages = Math.ceil(this.pokemons.length / 20); // Actualiza el número total de páginas
+        this.loading = false;
+      })
+      .catch((error) => {
+        this.loading = false;
+        throw new Error(error);
+      });
     });
   },
   methods: {
@@ -106,13 +116,13 @@ export default {
 
     ShowPokemon(id) {
       axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`).then((res) => {
-        this.selectedPokemon = res.data;
-        this.FetchPokemonDescription(id);
-        this.showDialog = true; // Show the dialog when a Pokemon is clicked
-      }).catch((error) => {
-        throw new Error(error);
-      });
-    },
+      this.selectedPokemon = res.data;
+      this.FetchPokemonDescription(id);
+      this.showDialog = true; // Show the dialog when a Pokemon is clicked
+        }).catch((error) => {
+          throw new Error(error);
+        });
+      },
     FetchPokemonDescription(id) {
       axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`).then((res) => {
         const speciesData = res.data;
@@ -122,24 +132,29 @@ export default {
         throw new Error(error)
       });
     },
+    goToPage(pageNumber) {
+  if (pageNumber >= 1 && pageNumber <= this.totalPages) {
+    this.currentPage = pageNumber;
+  }
+},
   },
 
   computed: {
     FilteredPokemons() {
-      if (this.search === '') {
-        return this.pokemons;
-      } else {
-        return this.pokemons.filter((item) => {
-          return item.name.includes(this.search);
-        });
-      }
-    },
+  if (this.search === '') {
+    return this.pokemons.slice((this.currentPage - 1) * 20, this.currentPage * 20);
+  } else {
+    return this.pokemons.filter((item) => {
+      return item.name.includes(this.search);
+    });
+  }
+},
     ShowDialogProp: {
       get() {
         return this.showDialog;
       },
       set(newValue) {
-        this.$emit('update:showDialog', newValue); // Emit an event to update the parent's showDialog variable
+        this.$emit('update:showDialog', newValue); 
       },
     },
   },
@@ -156,6 +171,7 @@ export default {
   background-size: cover ;
   background-position: center;
   min-height: 100vh;
+  overflow: hidden
 }
 
 .banner {
