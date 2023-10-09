@@ -6,13 +6,13 @@
 
     <!-- Search Field -->
     <v-container>
-      <SearchField :search="search" @update-search="updateSearch"></SearchField> <!-- Pass search prop and listen for update-search event -->
+      <SearchField :search="search" @update-search="UpdateSearch"></SearchField> <!-- Pass search prop and listen for update-search event -->
       
       <v-row justify="center">
          <!-- Pokemon Cards using PokemonCard component -->
          <v-row justify="center">
             <v-container >
-              <PokemonCard :filteredPokemons="filtered_pokemons" @show-pokemon="showPokemon"></PokemonCard>
+              <PokemonCard :filteredPokemons="FilteredPokemons" @show-pokemon="ShowPokemon"></PokemonCard>
             </v-container>
           </v-row>
       </v-row>
@@ -68,11 +68,11 @@ export default {
           this.pokemons = responses.map((response) => {
             const data = response.data;
             return {
-              name: this.capitalize(data.name),
+              name: this.Capitalize(data.name),
               id: data.id,
               imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${data.id}.png`,
-              types: this.getTypes(data),
-              weight: this.formatWeight(data.weight),
+              types: this.GetTypes(data),
+              weight: this.FormatWeight(data.weight),
             };
           });
           this.loading = false;
@@ -84,36 +84,36 @@ export default {
     });
   },
   methods: {
-    getTypes(pokemon) {
+    GetTypes(pokemon) {
       if (pokemon.types && pokemon.types.length > 0) {
         return pokemon.types.map((type) => type.type.name).join(', ');
       }
       return 'N/A';
     },
-    updateSearch(newSearch) {
+    UpdateSearch(newSearch) {
       this.search = newSearch; // Update the search variable in the parent component
     },
-    formatWeight(weight) {
+    FormatWeight(weight) {
       if (weight !== 'N/A') {
         return (weight);
       }
       return 'N/A';
     },
 
-    capitalize(str) {
+    Capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
 
-    showPokemon(id) {
+    ShowPokemon(id) {
       axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`).then((res) => {
         this.selectedPokemon = res.data;
-        this.fetchPokemonDescription(id);
+        this.FetchPokemonDescription(id);
         this.showDialog = true; // Show the dialog when a Pokemon is clicked
       }).catch((error) => {
         throw new Error(error);
       });
     },
-    fetchPokemonDescription(id) {
+    FetchPokemonDescription(id) {
       axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`).then((res) => {
         const speciesData = res.data;
         const descriptionEntry = speciesData.flavor_text_entries.find((entry) => entry.language.name === 'es');
@@ -125,7 +125,7 @@ export default {
   },
 
   computed: {
-    filtered_pokemons() {
+    FilteredPokemons() {
       if (this.search === '') {
         return this.pokemons;
       } else {
@@ -134,7 +134,7 @@ export default {
         });
       }
     },
-    showDialogProp: {
+    ShowDialogProp: {
       get() {
         return this.showDialog;
       },
