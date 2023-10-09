@@ -12,7 +12,7 @@
          <!-- Pokemon Cards using PokemonCard component -->
          <v-row justify="center">
             <v-container >
-              <v-row justify="center">
+              <v-row justify="center my-1">
                 <v-btn @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="mx-1">Anterior</v-btn>
                 <v-btn @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="mx-1">Siguiente</v-btn>
               </v-row>
