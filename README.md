@@ -13,6 +13,12 @@ La aplicación de la Pokédex está diseñada para mostrar información sobre lo
 
 - Manejo de errores y pantalla de carga: La aplicación también maneja errores y muestra una pantalla de carga mientras se obtiene la información de la PokéAPI.
 
+## Tecnologias
+
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuejs/vuejs-original.svg" width="55" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vuetify/vuetify-original.svg" width="55" />
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="55" />
+          
 
 ## Project setup
 ```
